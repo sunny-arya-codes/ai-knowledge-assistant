@@ -18,6 +18,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 COPY . .
 
+RUN pytest
+
 RUN mkdir -p documents chroma_db
 
 EXPOSE 8000

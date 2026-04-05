@@ -1,6 +1,6 @@
 # AI Knowledge Assistant (RAG System)
 
-A production-grade Retrieval-Augmented Generation (RAG) system built to ingest your documents and answer questions contextually using local LLMs.
+A Retrieval-Augmented Generation (RAG) system built to ingest your documents and answer questions contextually using local LLMs.
 
 ## Project Overview
 
@@ -54,36 +54,39 @@ flowchart TD
 - **Frontend:** Next.js, React, Tailwind CSS.
 - **Containerization:** Docker & Docker Compose.
 
-## 🚀 Setup & Execution
+## Setup & Execution
 
 ### Prerequisites
-- Docker Engine & Docker Compose installed.
-- Local documents to ingest in `./backend/documents/`.
+- Docker Engine & Docker Compose V2 (`docker compose`) installed.
 
-> [!WARNING]
-> By default, `docker-compose.yml` executes using CPU fallback since host hardware environments differ. To enable lightning-fast inference, uncomment the `deploy` configuration block within `docker-compose.yml` under the `ollama` service to pass-through your host NVIDIA GPU. *(Requires NVIDIA Container Toolkit)*
+### Quick Start Guide
 
-### 1. Start the stack
-
+**1. Clone the repository:**
 ```bash
-docker-compose up --build
+git clone <repository_url>
+cd ai-knowledge-assistant
 ```
-This commands builds the backend and frontend. The `ollama-pull` companion container will wait for the Ollama service to boot and automatically pull the `llama3.2` model if not present.
 
-### 2. Ingest Documents
-
-Place your files (PDFs/TXT) into `./backend/documents/`.
-Run the ingestion pipeline natively inside the backend container:
-
+**2. Start the services:**
 ```bash
-docker-compose exec backend python ingest.py
+docker compose up --build -d
 ```
-*(Optionally append `--clear` if you need to wipe out the existing vector store first.)*
+*(Note: It may take a few minutes for the companion container to automatically pull the `llama3.2` model on the first run.)*
 
-### 3. Usage
+**3. Add your context documents:**
+Copy your `.pdf` or `.txt` files into the local documents folder:
+```bash
+cp /path/to/your/files/* ./backend/documents/
+```
 
-Access the Web UI at:
-**http://localhost:3000**
+**4. Ingest context into the Vector Store:**
+Run the ingestion pipeline locally within the container:
+```bash
+docker compose exec backend python ingest.py
+```
+
+**5. Access the Knowledge Assistant:**
+Open your browser and navigate to: **http://localhost:3000**
 
 ## API Documentation
 
@@ -132,18 +135,15 @@ uv run pytest
 ```
 
 ## Design Decisions
-
-1. **Fully Asynchronous HTTP Networking:** The `OllamaClient` handles streaming through an underlying `httpx.AsyncClient` alongside asynchronous ASGI generator endpoints internally in FastAPI. This removes threadpool-blocking issues observed in traditional synchronous HTTP bridges.
-2. **Local Processing for Compliance:** All endpoints utilize a container-local `ollama` configuration routing to avoid API limits and maintain document data compliance.
-3. **Lifespan Context Resource Loading:** The system initializes the heavier embedding ML-models and Chroma client configurations strictly during the FastAPI boot lifespan instead of ad-hoc on the first incoming request, radically accelerating user "Time to First Byte" responses.
+- **Async Streaming:** Uses `httpx.AsyncClient` in FastAPI to prevent blocking the ASGI event loop.
+- **Data Privacy:** Runs a completely offline Ollama instance eliminating external API telemetry.
+- **Zero Cold-Starts:** Pre-loads ML embeddings and ChromaDB layers during FastAPI lifespan boot, yielding instant first-byte responses.
 
 ## Limitations
-
-- **Naive Chunking Algorithm:** Basic character limitations split data. Contextually smart semantic chunking isn't implemented (e.g. MarkdownSplitter or recursive splitting limits).
-- **Single Thread LLM Capacity:** Running Ollama strictly on local infrastructure restricts concurrent user processing. An architecture handling scale requires an external VLLM cluster or batched queuing.
+- **Basic Chunking:** Relies on hard character limits rather than intelligent semantic splitters.
+- **Hardware Bottlenecks:** Single-node local inference restricts parallel/concurrent user throughput.
 
 ## Future Improvements
-
-1. **Semantic Text Chunking:** Improve the context ingestion script to understand Markdown headers and logical PDF paragraphing so semantic boundaries aren't broken.
-2. **Metadata Filtering:** Integrate explicit document metadata (Tags, Author, Dates) filtering directly inside ChromaDB retrievals.
-3. **Conversational Memory buffer:** Pass historical Redis-cached Chat summaries to context strings for multi-turn conversational agents.
+- Switch to Recursive / Markdown-aware document chunking.
+- Implement explicit metadata filtering in ChromaDB.
+- Add conversational memory (Redis) for multi-turn chat interactions.

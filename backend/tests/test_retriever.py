@@ -5,14 +5,12 @@ from retrieval.retriever import Retriever
 @pytest.fixture
 def mock_embedder():
     embedder = MagicMock()
-    # Return a dummy vector of 384 dimensions natively
     embedder.embed_query.return_value = [0.1] * 384
     return embedder
 
 @pytest.fixture
 def mock_vector_store():
     store = MagicMock()
-    # Mocking a response with dummy chunks
     store.query.return_value = [
         {"content": "This is chunk 1", "filename": "doc1.txt"},
         {"content": "This is chunk 2", "filename": "doc1.txt"},
@@ -24,7 +22,6 @@ def test_retriever_query(mock_embedder, mock_vector_store):
     retriever = Retriever(embedder=mock_embedder, vector_store=mock_vector_store)
     chunks = retriever.retrieve("What is RAG?", top_k=3)
     
-    # Assert query flow
     mock_embedder.embed_query.assert_called_once_with("What is RAG?")
     mock_vector_store.query.assert_called_once_with([0.1] * 384, top_k=3)
     

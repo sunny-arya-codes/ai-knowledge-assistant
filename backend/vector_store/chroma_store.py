@@ -1,4 +1,4 @@
-# vector_store/chroma_store.py
+
 import logging
 from pathlib import Path
 
@@ -20,7 +20,7 @@ class ChromaVectorStore:
         )
         self._collection = self._client.get_or_create_collection(
             name=collection_name,
-            metadata={"hnsw:space": "cosine"},  # normalized vectors → cosine
+            metadata={"hnsw:space": "cosine"},
         )
         logger.info(
             "ChromaDB ready — collection: '%s', existing docs: %d",
@@ -33,7 +33,7 @@ class ChromaVectorStore:
             logger.warning("No chunks to store.")
             return
 
-        self._collection.upsert(  # add नहीं, upsert — re-ingest safe है
+        self._collection.upsert(
             ids=[f"{c.filename}__chunk_{c.chunk_index}" for c in chunks],
             documents=[c.content for c in chunks],
             embeddings=embeddings,
@@ -62,7 +62,7 @@ class ChromaVectorStore:
                     "content": doc,
                     "filename": meta["filename"],
                     "chunk_index": meta["chunk_index"],
-                    "score": round(1.0 - dist, 4),  # cosine distance → similarity
+                    "score": round(1.0 - dist, 4),
                 }
             )
 

@@ -3,7 +3,6 @@ from pathlib import Path
 from ingestion.loader import DocumentLoader
 
 def test_document_loader_txt(tmp_path):
-    # Setup test file
     test_dir = tmp_path / "docs"
     test_dir.mkdir()
     test_file = test_dir / "sample.txt"

@@ -31,7 +31,6 @@ class OllamaClient:
         return PROMPT_TEMPLATE.format(context=context, question=question)
 
     async def generate(self, question: str, context: str) -> str:
-        """Asynchronous response generation."""
         prompt = self._build_prompt(question, context)
 
         async with httpx.AsyncClient(timeout=60.0) as client:
@@ -44,10 +43,6 @@ class OllamaClient:
             return data["response"].strip() if "response" in data else ""
 
     async def stream(self, question: str, context: str) -> AsyncGenerator[str, None]:
-        """
-        Token-by-token async streaming.
-        Ollama returns newline-delimited JSON objects.
-        """
         prompt = self._build_prompt(question, context)
 
         async with httpx.AsyncClient(timeout=120.0) as client:

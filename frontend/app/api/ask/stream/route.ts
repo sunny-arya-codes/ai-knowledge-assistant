@@ -1,6 +1,3 @@
-// app/api/ask/stream/route.ts
-// Manual SSE proxy — bypasses Next.js rewrite buffering so tokens stream in real time.
-
 export const runtime = 'nodejs'
 
 export async function POST(request: Request) {
@@ -16,7 +13,6 @@ export async function POST(request: Request) {
       body: JSON.stringify(body),
     })
   } catch (err) {
-    // If backend isn't up yet (ECONNREFUSED), provide a clean error to the UI
     return new Response(
       JSON.stringify({ detail: 'Backend is starting up or temporarily unreachable. Please wait a moment and try again.' }),
       {
@@ -41,7 +37,6 @@ export async function POST(request: Request) {
     })
   }
 
-  // Pipe the upstream ReadableStream directly — no buffering.
   const stream = new ReadableStream({
     async start(controller) {
       const reader = upstream.body!.getReader()
