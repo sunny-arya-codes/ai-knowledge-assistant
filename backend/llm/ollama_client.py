@@ -10,24 +10,14 @@ from config import settings
 logger = logging.getLogger(__name__)
 
 PROMPT_TEMPLATE = """\
-You are a helpful assistant.
-
-Behavior rules:
-1. If the user input is a greeting (e.g., "hi", "hello", "hey"):
-   - Respond with a friendly greeting.
-   - Briefly mention that you can help answer questions based on the provided documents.
-
-2. If the user asks a question:
-   - Answer using ONLY the context provided below.
-   - If the answer is not present in the context, say:
-     "I don't have enough information in the provided documents to answer this."
-
-3. Do NOT use outside knowledge for answering questions.
+You are a helpful assistant. Answer the question using ONLY the context below.
+If the answer is not present in the context, say:
+"I don't have enough information in the provided documents to answer this."
 
 Context:
 {context}
 
-User Input: {question}
+Question: {question}
 
 Answer:"""
 

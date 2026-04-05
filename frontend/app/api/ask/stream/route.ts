@@ -8,11 +8,23 @@ export async function POST(request: Request) {
 
   const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:8000'
 
-  const upstream = await fetch(`${backendUrl}/ask/stream`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  })
+  let upstream
+  try {
+    upstream = await fetch(`${backendUrl}/ask/stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch (err) {
+    // If backend isn't up yet (ECONNREFUSED), provide a clean error to the UI
+    return new Response(
+      JSON.stringify({ detail: 'Backend is starting up or temporarily unreachable. Please wait a moment and try again.' }),
+      {
+        status: 503,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
+  }
 
   if (!upstream.ok) {
     const errText = await upstream.text()

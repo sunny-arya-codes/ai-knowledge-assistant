@@ -5,9 +5,10 @@ interface Props {
   onSubmit: (question: string) => void
   onReset: () => void
   disabled: boolean
+  isOffline?: boolean
 }
 
-export function QuestionForm({ onSubmit, onReset, disabled }: Props) {
+export function QuestionForm({ onSubmit, onReset, disabled, isOffline }: Props) {
   const [question, setQuestion] = useState('')
 
   function handleSubmit(e: FormEvent) {
@@ -24,7 +25,7 @@ export function QuestionForm({ onSubmit, onReset, disabled }: Props) {
         type="text"
         value={question}
         onChange={e => setQuestion(e.target.value)}
-        placeholder="Ask a question about your documents..."
+        placeholder={isOffline ? "Waiting for backend..." : "Ask a question about your documents..."}
         disabled={disabled}
         className="question-input"
         autoComplete="off"
@@ -35,7 +36,7 @@ export function QuestionForm({ onSubmit, onReset, disabled }: Props) {
         disabled={disabled || !question.trim()}
         className="btn-submit"
       >
-        {disabled ? 'Thinking…' : 'Ask'}
+        {isOffline ? 'Offline' : disabled ? 'Thinking…' : 'Ask'}
       </button>
       <button
         id="clear-btn"

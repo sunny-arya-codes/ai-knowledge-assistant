@@ -48,8 +48,16 @@ export function useAskStream(): UseAskStreamReturn {
       })
 
       if (!response.ok) {
-        const err = await response.json()
-        throw new Error(err.detail ?? 'Request failed')
+        const errorText = await response.text();
+        let errorMessage = 'Request failed';
+        try {
+          const parsed = JSON.parse(errorText);
+          errorMessage = parsed.detail || parsed.error || errorMessage;
+        } catch {
+          // If the backend returns HTML or a generic string, just use it or standard message
+          errorMessage = errorText || `Error ${response.status}: Service Unavailable`;
+        }
+        throw new Error(errorMessage);
       }
 
       if (!response.body) throw new Error('No response body')
