@@ -1,6 +1,49 @@
-def main():
-    print("Hello from backend!")
+# main.py
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from api.dependencies import get_embedder, get_vector_store
+from api.routes import ask
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 
-if __name__ == "__main__":
-    main()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup — heavy objects एक बार warm-up
+    logger.info("Warming up embedder and vector store...")
+    get_embedder()
+    get_vector_store()
+    logger.info("Ready to serve requests.")
+    yield
+    # Shutdown — cleanup यहाँ होगी अगर कुछ हो
+    logger.info("Shutting down.")
+
+
+app = FastAPI(
+    title="AI Knowledge Assistant",
+    description="RAG-based document Q&A system",
+    version="1.0.0",
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Next.js dev
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
+
+app.include_router(ask.router)
+
+
+@app.get("/health", tags=["Health"])
+def health_check() -> dict:
+    return {"status": "ok"}
