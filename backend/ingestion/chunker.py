@@ -1,4 +1,3 @@
-# ingestion/chunker.py
 import logging
 from dataclasses import dataclass
 
@@ -17,11 +16,6 @@ class Chunk:
 
 
 class TextChunker:
-    """
-    RecursiveCharacterTextSplitter use करता है।
-    यह पहले paragraphs पर split करता है, फिर sentences पर,
-    फिर words पर — इससे semantic meaning ज़्यादा preserve होती है।
-    """
 
     def __init__(self, chunk_size: int = 500, chunk_overlap: int = 50):
         self._splitter = RecursiveCharacterTextSplitter(

@@ -1,4 +1,3 @@
-// components/AnswerStream.tsx
 
 interface Props {
   answer: string

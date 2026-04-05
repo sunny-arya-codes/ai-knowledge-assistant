@@ -1,4 +1,3 @@
-// components/SourcesList.tsx
 
 interface Props {
   sources: string[]

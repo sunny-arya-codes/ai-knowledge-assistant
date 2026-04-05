@@ -1,4 +1,4 @@
-// hooks/useHealthCheck.ts
+
 import { useEffect, useState } from 'react'
 
 export type ConnectionStatus = 'checking' | 'connected' | 'offline'
@@ -15,11 +15,9 @@ export function useHealthCheck() {
         
         if (res.ok) {
            setStatus('connected')
-           // Ping every 10s when healthy
            timeoutId = setTimeout(checkHealth, 10000)
         } else {
            setStatus('offline')
-           // Ping every 2s when unhealthy/starting
            timeoutId = setTimeout(checkHealth, 2000)
         }
       } catch (err) {
@@ -28,7 +26,6 @@ export function useHealthCheck() {
       }
     }
 
-    // Initial check
     checkHealth()
 
     return () => {

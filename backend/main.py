@@ -1,4 +1,3 @@
-# main.py
 import logging
 from contextlib import asynccontextmanager
 
@@ -17,13 +16,11 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup — heavy objects एक बार warm-up
     logger.info("Warming up embedder and vector store...")
     get_embedder()
     get_vector_store()
     logger.info("Ready to serve requests.")
     yield
-    # Shutdown — cleanup यहाँ होगी अगर कुछ हो
     logger.info("Shutting down.")
 
 
@@ -36,7 +33,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js dev
+    allow_origins=["http://localhost:3000"],
     allow_methods=["POST"],
     allow_headers=["*"],
 )

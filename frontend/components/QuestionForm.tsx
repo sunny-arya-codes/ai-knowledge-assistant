@@ -1,4 +1,4 @@
-// components/QuestionForm.tsx
+
 import { FormEvent, useState } from 'react'
 
 interface Props {

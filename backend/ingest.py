@@ -1,4 +1,3 @@
-# ingest.py
 import argparse
 import logging
 import sys

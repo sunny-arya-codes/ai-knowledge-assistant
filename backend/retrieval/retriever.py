@@ -1,4 +1,3 @@
-# retrieval/retriever.py
 import logging
 
 from ingestion.embedder import Embedder
@@ -23,11 +22,6 @@ class Retriever:
         return chunks
 
     def build_context(self, chunks: list[dict]) -> str:
-        """
-        Chunks को एक clean context string में join करता है।
-        हर chunk separator से अलग होता है ताकि LLM
-        boundaries clearly देख सके।
-        """
         parts = []
         for i, chunk in enumerate(chunks, start=1):
             parts.append(f"[{i}] (Source: {chunk['filename']})\n{chunk['content']}")

@@ -5,6 +5,14 @@ services:
       - "11434:11434"
     volumes:
       - ollama_data:/root/.ollama    
+    # ========================================================
+    # HARDWARE ACCELERATION (GPU vs CPU Fallback)
+    # ========================================================
+    # By default, Ollama will run using CPU which can be exceptionally slow.
+    # If your host machine has an NVIDIA GPU and you have installed the
+    # NVIDIA Container Toolkit, UNCOMMENT the deploy block below to
+    # enable lightning-fast GPU-accelerated inference.
+    # ========================================================
     # deploy:
     #   resources:
     #     reservations:

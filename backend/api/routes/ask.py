@@ -1,4 +1,3 @@
-# api/routes/ask.py
 import json
 import logging
 from collections.abc import AsyncGenerator
@@ -21,7 +20,7 @@ router = APIRouter(prefix="/ask", tags=["QnA"])
     response_model=AskResponse,
     summary="Ask a question and get a complete answer",
 )
-def ask(
+async def ask(
     body: AskRequest,
     retriever: Retriever = Depends(get_retriever),
     llm: OllamaClient = Depends(get_ollama_client),
@@ -38,7 +37,7 @@ def ask(
     sources = retriever.get_unique_sources(chunks)
 
     try:
-        answer = llm.generate(question=body.question, context=context)
+        answer = await llm.generate(question=body.question, context=context)
     except Exception as exc:
         logger.error("LLM generation failed: %s", exc)
         raise HTTPException(
@@ -53,7 +52,7 @@ def ask(
     "/stream",
     summary="Ask a question and receive a streaming SSE response",
 )
-def ask_stream(
+async def ask_stream(
     body: AskRequest,
     retriever: Retriever = Depends(get_retriever),
     llm: OllamaClient = Depends(get_ollama_client),
@@ -69,13 +68,11 @@ def ask_stream(
     context = retriever.build_context(chunks)
     sources = retriever.get_unique_sources(chunks)
 
-    def event_generator() -> AsyncGenerator:
+    async def event_generator() -> AsyncGenerator:
         try:
-            for token in llm.stream(question=body.question, context=context):
-                # SSE format: data: <payload>\n\n
+            async for token in llm.stream(question=body.question, context=context):
                 yield f"data: {json.dumps({'token': token})}\n\n"
 
-            # Stream खत्म — sources भेजो
             yield f"data: {json.dumps({'done': True, 'sources': sources})}\n\n"
 
         except Exception as exc:
@@ -87,7 +84,7 @@ def ask_stream(
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no",   # nginx buffering बंद
+            "X-Accel-Buffering": "no",   
             "Connection": "keep-alive",
         },
     )

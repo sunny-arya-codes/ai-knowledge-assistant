@@ -1,4 +1,3 @@
-# ingestion/pipeline.py
 import logging
 from pathlib import Path
 
@@ -33,19 +32,15 @@ class IngestionPipeline:
 
         logger.info("=== Ingestion Start: %s ===", directory)
 
-        # Step 1 — Load
         documents = self.loader.load_from_directory(directory)
         if not documents:
             logger.warning("No documents found in: %s", directory)
             return {"status": "skipped", "reason": "no documents found"}
 
-        # Step 2 — Chunk
         chunks = self.chunker.chunk_documents(documents)
 
-        # Step 3 — Embed
         embeddings = self.embedder.embed_chunks(chunks)
 
-        # Step 4 — Store
         self.vector_store.add_chunks(chunks, embeddings)
 
         summary = {

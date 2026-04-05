@@ -1,9 +1,8 @@
-# ingestion/loader.py
 import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-import fitz  # PyMuPDF
+import fitz  
 
 logger = logging.getLogger(__name__)
 

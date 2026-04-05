@@ -1,4 +1,4 @@
-// hooks/useAskStream.ts
+
 import { useCallback, useRef, useState } from 'react'
 
 type Status = 'idle' | 'loading' | 'streaming' | 'done' | 'error'
@@ -32,7 +32,7 @@ export function useAskStream(): UseAskStreamReturn {
   }, [])
 
   const ask = useCallback(async (question: string) => {
-    // पिछली request cancel करो अगर चल रही हो
+
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
@@ -54,7 +54,7 @@ export function useAskStream(): UseAskStreamReturn {
           const parsed = JSON.parse(errorText);
           errorMessage = parsed.detail || parsed.error || errorMessage;
         } catch {
-          // If the backend returns HTML or a generic string, just use it or standard message
+
           errorMessage = errorText || `Error ${response.status}: Service Unavailable`;
         }
         throw new Error(errorMessage);
@@ -71,7 +71,7 @@ export function useAskStream(): UseAskStreamReturn {
         const { done, value } = await reader.read()
         if (done) break
 
-        // SSE chunks decode करो — multiple events एक read में आ सकते हैं
+
         const raw = decoder.decode(value, { stream: true })
         const lines = raw.split('\n\n').filter(Boolean)
 
@@ -79,7 +79,7 @@ export function useAskStream(): UseAskStreamReturn {
           if (!line.startsWith('data: ')) continue
 
           try {
-            const payload = JSON.parse(line.slice(6)) // "data: " = 6 chars
+            const payload = JSON.parse(line.slice(6)) 
 
             if (payload.token) {
               setState(prev => ({ ...prev, answer: prev.answer + payload.token }))
@@ -97,13 +97,13 @@ export function useAskStream(): UseAskStreamReturn {
               throw new Error(payload.error)
             }
           } catch (parseErr) {
-            // JSON parse fail — line skip करो, stream continue करो
+
             console.warn('SSE parse error:', parseErr)
           }
         }
       }
     } catch (err) {
-      if ((err as Error).name === 'AbortError') return // user ने cancel किया
+      if ((err as Error).name === 'AbortError') return
 
       setState(prev => ({
         ...prev,

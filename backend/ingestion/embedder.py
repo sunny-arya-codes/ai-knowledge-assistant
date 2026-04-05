@@ -1,4 +1,3 @@
-# ingestion/embedder.py
 import logging
 
 from sentence_transformers import SentenceTransformer
@@ -9,10 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class Embedder:
-    """
-    all-MiniLM-L6-v2 — 384 dimensions, fast, good quality।
-    Local है, कोई API call नहीं — assessment की requirement।
-    """
 
     def __init__(self, model_name: str):
         logger.info("Loading embedding model: %s", model_name)
@@ -30,7 +25,7 @@ class Embedder:
             texts,
             batch_size=32,
             show_progress_bar=True,
-            normalize_embeddings=True,  # cosine similarity के लिए ज़रूरी
+            normalize_embeddings=True,  
         )
         return embeddings.tolist()
 

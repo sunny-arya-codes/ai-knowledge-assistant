@@ -1,4 +1,4 @@
-// components/ConnectionStatus.tsx
+
 import { ConnectionStatus as StatusType } from '@/hooks/useHealthCheck'
 
 export function ConnectionStatus({ status }: { status: StatusType }) {

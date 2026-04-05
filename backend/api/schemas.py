@@ -1,4 +1,3 @@
-# api/schemas.py
 from pydantic import BaseModel, Field
 
 
@@ -8,7 +7,7 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str
-    sources: list[str]  # unique filenames only
+    sources: list[str]  
 
 
 class RetrievedChunk(BaseModel):

@@ -1,5 +1,3 @@
-// lib/api.ts
-
 export interface AskResponse {
   answer: string
   sources: string[]

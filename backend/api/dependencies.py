@@ -1,4 +1,3 @@
-# api/dependencies.py
 from functools import lru_cache
 
 from config import settings

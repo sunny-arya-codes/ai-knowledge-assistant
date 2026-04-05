@@ -1,7 +1,6 @@
-# llm/ollama_client.py
 import json
 import logging
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 
 import httpx
 
@@ -31,34 +30,34 @@ class OllamaClient:
     def _build_prompt(self, question: str, context: str) -> str:
         return PROMPT_TEMPLATE.format(context=context, question=question)
 
-    def generate(self, question: str, context: str) -> str:
-        """Sync response — /ask endpoint के लिए।"""
+    async def generate(self, question: str, context: str) -> str:
+        """Asynchronous response generation."""
         prompt = self._build_prompt(question, context)
 
-        with httpx.Client(timeout=60.0) as client:
-            response = client.post(
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            response = await client.post(
                 f"{self._base_url}/api/generate",
                 json={"model": self._model, "prompt": prompt, "stream": False},
             )
             response.raise_for_status()
             data = response.json()
-            return data["response"].strip()
+            return data["response"].strip() if "response" in data else ""
 
-    def stream(self, question: str, context: str) -> Generator[str, None, None]:
+    async def stream(self, question: str, context: str) -> AsyncGenerator[str, None]:
         """
-        Token-by-token streaming — /ask/stream endpoint के लिए।
-        Ollama newline-delimited JSON return करता है।
+        Token-by-token async streaming.
+        Ollama returns newline-delimited JSON objects.
         """
         prompt = self._build_prompt(question, context)
 
-        with httpx.Client(timeout=120.0) as client:
-            with client.stream(
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            async with client.stream(
                 "POST",
                 f"{self._base_url}/api/generate",
                 json={"model": self._model, "prompt": prompt, "stream": True},
             ) as response:
                 response.raise_for_status()
-                for line in response.iter_lines():
+                async for line in response.aiter_lines():
                     if not line:
                         continue
                     try:
