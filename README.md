@@ -88,6 +88,8 @@ docker compose exec backend python ingest.py
 **5. Access the Knowledge Assistant:**
 Open your browser and navigate to: **http://localhost:3000**
 
+<img width="1582" height="1035" alt="Screenshot 2026-04-05 at 9 46 24 PM" src="https://github.com/user-attachments/assets/bf655faf-5817-4c46-bd52-c5b52bad9861" />
+
 ## API Documentation
 
 ### 1. `POST /ask`
@@ -95,6 +97,7 @@ Synchronous question-answering. Wait for the full completion.
 
 **Request:**
 ```json
+
 {
   "question": "What is the core topic of the documents?"
 }
